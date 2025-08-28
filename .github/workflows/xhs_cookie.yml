@@ -1,0 +1,26 @@
+name: Auto Fetch XHS Cookie
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # 每天北京时间早上 6 点（UTC+8）
+  workflow_dispatch:
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install playwright requests
+          playwright install chromium
+
+      - name: Run script
+        run: python get_xhs_cookie.py
