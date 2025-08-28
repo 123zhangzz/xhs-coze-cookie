@@ -4,9 +4,9 @@ import requests
 
 def get_xiaohongshu_cookie():
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
 
-        # 如果存在登录状态，加载；否则不加载（首次扫码）
+       
         if os.path.exists("xhs_state.json"):
             context = browser.new_context(storage_state="xhs_state.json")
             print("✔ 已加载保存的登录状态，无需扫码")
