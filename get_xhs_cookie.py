@@ -1,27 +1,34 @@
+import os
 from playwright.sync_api import sync_playwright
 import requests
-import json
 
 def get_xiaohongshu_cookie():
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        context = browser.new_context(storage_state="xhs_state.json")
+        browser = p.chromium.launch(headless=False)
+
+        # 如果存在登录状态，加载；否则不加载（首次扫码）
+        if os.path.exists("xhs_state.json"):
+            context = browser.new_context(storage_state="xhs_state.json")
+            print("✔ 已加载保存的登录状态，无需扫码")
+        else:
+            context = browser.new_context()
+            print("⚠ 未检测到登录状态，请扫码登录")
 
         page = context.new_page()
         page.goto("https://www.xiaohongshu.com/")
 
-        print("请扫码登录小红书，扫码后按回车...")
-        input(">> ")
+        if not os.path.exists("xhs_state.json"):
+            input(">>> 登录完成后，按下回车继续... ")
+            context.storage_state(path="xhs_state.json")  # 保存登录状态
+            print("✔ 登录状态已保存，下次可自动登录")
 
         cookies = context.cookies()
         cookie_str = "; ".join([f"{c['name']}={c['value']}" for c in cookies])
-
-        context.storage_state(path="xhs_state.json")
         browser.close()
         return cookie_str
 
 def send_cookie_to_coze(cookie):
-    webhook_url = "https://api.coze.com/webhook/your-webhook-url"  # 替换为你的 Coze Webhook 地址
+    webhook_url = "https://api.coze.cn/api/trigger/v1/webhook/biz_id/bot_platform/hook/1000000000546754818"
     payload = {
         "cookie": cookie
     }
