@@ -2,15 +2,22 @@ name: Auto Fetch XHS Cookie
 
 on:
   schedule:
-    - cron: '0 * * * *'  # 每天北京时间早上 6 点（UTC+8）
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Cache xhs_state.json
+        uses: actions/cache@v3
+        with:
+          path: xhs_state.json
+          key: xhs-state-${{ runner.os }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -23,4 +30,6 @@ jobs:
           playwright install chromium
 
       - name: Run script
+        env:
+          COZE_BEARER_TOKEN: ${{ secrets.COZE_BEARER_TOKEN }}
         run: python get_xhs_cookie.py
