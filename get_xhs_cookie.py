@@ -34,7 +34,7 @@ def send_cookie_to_coze(cookie):
     if not cookie:
         print("无有效cookie，跳过发送")
         return
-    webhook_url = "https://api.coze.cn/api/trigger/v1/webhook/biz_id/bot_platform/hook/1000000000546754818"
+    webhook_url = "https://api.coze.cn/api/trigger/v1/webhook/biz_id/bot_platform/hook/1000000000546794242"
     payload = {
         "cookie": cookie
     }
