@@ -2,34 +2,37 @@ name: Auto Fetch XHS Cookie
 
 on:
   schedule:
-    - cron: '0 * * * *'
-  workflow_dispatch:
+    - cron: '0 * * * *'  # 每小时运行一次
+  workflow_dispatch:      # 支持手动运行
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name:  Checkout repository
         uses: actions/checkout@v3
 
-      - name: Cache xhs_state.json
+      - name:  Cache xhs_state.json (登录状态)
         uses: actions/cache@v3
         with:
           path: xhs_state.json
           key: xhs-state-${{ runner.os }}
 
-      - name: Set up Python
+      - name:  Set up Python 3.9
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      - name: Install dependencies
+      - name:  Install dependencies
         run: |
+          pip install --upgrade pip
           pip install playwright requests
           playwright install chromium
 
-      - name: Run script
+      - name:  Run main script
         env:
           COZE_BEARER_TOKEN: ${{ secrets.COZE_BEARER_TOKEN }}
-        run: python get_xhs_cookie.py
+        run: |
+          echo " 正在运行 Python 脚本..."
+          python get_xhs_cookie.py
